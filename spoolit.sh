@@ -8,11 +8,7 @@ fi
 
 INIFILE=$1
 HOME_DIR=`pwd`
-MYSQL_LIB=$HOME_DIR/lib/mysql-connector-java-5.0.4-bin.jar
-ORACLE_LIB=$HOME_DIR/lib/ojdbc14_g.jar
-CLASSPATH=$MYSQL_LIB:$ORACLE_LIB:$HOME_DIR
-
-export CLASSPATH
+export CLASSPATH=.:$HOME_DIR/lib/mysql-connector-java-5.0.4-bin.jar:$HOME_DIR/lib/ojdbc14_g.jar:$HOME_DIR/lib/tdgssconfig.jar:$HOME_DIR/lib/terajdbc4.jar
 
 java SpoolIt $INIFILE
 

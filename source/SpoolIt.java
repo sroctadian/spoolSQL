@@ -1,11 +1,13 @@
+
 /*
-	File Name		: SpoolIt.java
+    $Log: SpoolIt.java,v $
+    Revision 1.1  2013/01/04 02:46:45  sroctadian
+    Initial revision
 
 */
 
-//package Learn.spoolSQL;
-
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Connection;
@@ -141,27 +143,28 @@ public class SpoolIt {
 			}else if(vDbType.equals("oracle")) {
 				//vURL = "jdbc:oracle:thin:@(description=(address=(host=" + vHost + ") (protocol=tcp)(port=1521))(connect_data=(sid=" + vDb + ")))";
 				//conn = DriverManager.getConnection(vURL, vUser, vPassword);
-
-				conn = DriverManager.getConnection( "jdbc:oracle:thin:@" + vHost + ":1521:" + vDb,vUser,vPassword);
-
+				conn = DriverManager.getConnection( "jdbc:oracle:thin:@" + vHost + ":1521:" + vDb, vUser, vPassword);
+			} else if (vDbType.equals("teradata")) {
+                conn = DriverManager.getConnection("jdbc:teradata://" + vHost + "/DATABASE=" + vDb + ",TMODE=ANSI,CHARSET=UTF8,TYPE=FASTEXPORT", vUser, vPassword);
 			}
 
 			//Implementation
 			try {
-				stmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			    PreparedStatement ps = conn.prepareStatement(vQuery);
+				//stmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 
-				stmt.setFetchSize(FETCHSIZE);
+				//stmt.setFetchSize(FETCHSIZE);
 				System.out.print("\nExecuting query...");
 				//change fetch size on result set
 				//rs.setFetchSize(FETCHSIZE);
 				//rs.setFetchDirection(ResultSet.FETCH_FORWARD);
 				//rs = stmt.executeQuery(vQuery);
-
-				if(stmt.execute(vQuery)) {
+				rs = ps.executeQuery();
+				if(rs != null) {
 					System.out.print("Done\n");
 					//change fetch size on result set
-					rs = stmt.getResultSet();
-					rs.setFetchSize(FETCHSIZE);
+					//rs = stmt.getResultSet();
+					//rs.setFetchSize(FETCHSIZE);
 					rsmd = rs.getMetaData();
 					n = rsmd.getColumnCount();
 					//fetch data and save to file
@@ -195,12 +198,13 @@ public class SpoolIt {
 						rs.close();
 					}
 					rs = null;
-					if(stmt != null) {
-						stmt.close();
-					}
-					stmt = null;
+//					if(stmt != null) {
+//						stmt.close();
+//					}
+//					stmt = null;
 				} catch (SQLException sqlEx) { }
 			}
+
 			try {
 				//release connection
 				conn.close();
@@ -235,9 +239,14 @@ class LoadDriver {
 				Class.forName("com.mysql.jdbc.Driver").newInstance();
 			} else if(dbType.equals("oracle")) {
 				Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
+			} else if (dbType.equals("teradata")) {
+			     Class.forName("com.teradata.jdbc.TeraDriver");
 			}
 		} catch (Exception ex) {
 			// handle the error
 		}
 	}
 }
+
+
+
