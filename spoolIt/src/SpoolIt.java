@@ -14,7 +14,7 @@ import java.sql.Statement;
 import com.eclipsesource.json.JsonObject;
 
 public class SpoolIt {
-	final static String _APP_VERSION = "0.2.0";
+	final static String _APP_VERSION = "0.2.1";
 	
 	private static int FETCHSIZE = 1024;
 	private static JsonObject jsonObject;
@@ -109,7 +109,7 @@ public class SpoolIt {
 				//		":" + jsonObject.get("PORT").asString() + ":" + jsonObject.get("INSTANCE").asString() );
 				jsonObject.set("CONNECTION_STRING", "jdbc:oracle:thin:@//" + jsonObject.get("HOST").asString() + 
 						":" + jsonObject.get("PORT").asString() + "/" + jsonObject.get("INSTANCE").asString() );
-				
+
 				//System.out.println("Connection string : " + jsonObject.get("CONNECTION_STRING").asString() );
 				conn = DriverManager.getConnection(jsonObject.get("CONNECTION_STRING").asString(), 
 						jsonObject.get("USER").asString(), 
@@ -117,6 +117,13 @@ public class SpoolIt {
 			} else if (jsonObject.get("DATABASE").asString().equals("teradata")) {
                 conn = DriverManager.getConnection("jdbc:teradata://" + jsonObject.get("HOST").asString() + 
                 		"/DATABASE=" + jsonObject.get("INSTANCE").asString() + ",TMODE=ANSI,CHARSET=UTF8,TYPE=FASTEXPORT", jsonObject.get("USER").asString(), jsonObject.get("PASSWORD").asString());
+			} else if (jsonObject.get("DATABASE").asString().equals("impala")) {
+                //jdbc:hive2://myhost.example.com:21050/test_db;auth=noSasl
+				conn = DriverManager.getConnection("jdbc:hive2://" + jsonObject.get("HOST").asString() + 
+						":" + jsonObject.get("PORT").asString() +
+                		"/" + jsonObject.get("INSTANCE").asString() + 
+                		";auth=noSasl"
+                		);
 			}
 
 			//Implementation
@@ -203,6 +210,8 @@ class LoadDriver {
 				Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
 			} else if (dbType.equals("teradata")) {
 			     Class.forName("com.teradata.jdbc.TeraDriver");
+			} else if (dbType.equals("impala")) {
+			     Class.forName("org.apache.hive.jdbc.HiveDriver");
 			}
 		} catch (Exception ex) {
 			// handle the error
