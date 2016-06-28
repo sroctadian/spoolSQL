@@ -124,6 +124,20 @@ public class SpoolIt {
                 		"/" + jsonObject.get("INSTANCE").asString() + 
                 		";auth=noSasl"
                 		);
+			} else if (jsonObject.get("DATABASE").asString().equals("hive")) {
+                //jdbc:hive2://localhost:10000/default
+				conn = DriverManager.getConnection("jdbc:hive2://" + jsonObject.get("HOST").asString() + 
+						":" + jsonObject.get("PORT").asString() +
+                		"/" + jsonObject.get("INSTANCE").asString()
+                		);
+			} else if (jsonObject.get("DATABASE").asString().equals("db2")) {
+                //String url = "jdbc:db2://myhost:5021/mydb:" + "user=dbadm;password=dbadm;"
+				conn = DriverManager.getConnection("jdbc:db2://" + jsonObject.get("HOST").asString() + 
+						":" + jsonObject.get("PORT").asString() +
+                		"/" + jsonObject.get("INSTANCE").asString() + 
+ 						":user=" + jsonObject.get("USER").asString() + 
+ 						";password=" + jsonObject.get("PASSWORD").asString() + ";"
+                		);
 			}
 
 			//Implementation
@@ -212,6 +226,10 @@ class LoadDriver {
 			     Class.forName("com.teradata.jdbc.TeraDriver");
 			} else if (dbType.equals("impala")) {
 			     Class.forName("org.apache.hive.jdbc.HiveDriver");
+			} else if (dbType.equals("hive")) {
+			     Class.forName("org.apache.hive.jdbc.HiveDriver");
+			} else if (dbType.equals("db2")) {
+			     Class.forName("com.ibm.db2.jcc.DB2Driver");
 			}
 		} catch (Exception ex) {
 			// handle the error

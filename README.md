@@ -18,5 +18,7 @@ Update. 28.10.2014 23:32:04
 How to run:
 To execute spoolIt type: java -jar /your/path/of/spoolIt-0.2.0.jar [configuration file]
 
+Known Bugs:
+1. Not support multiline string for JSON value
 
 Bugs Report to : syahreza.octadian@gmail.com
